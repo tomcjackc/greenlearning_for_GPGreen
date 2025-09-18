@@ -4,7 +4,9 @@ import scipy.io
 from . import config
 from ..quadrature_weights import get_weights
 
-def load_data(model, example_path, example_name):
+np.random.seed(42)
+
+def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, resample):
     """Load the training dataset."""
     
     # Example name
@@ -36,10 +38,15 @@ def load_data(model, example_path, example_name):
     # Load the dataset
     model.data_idn = scipy.io.loadmat(example_path+"%s.mat" % model.example_name)
     
+    shuffle_idx = np.random.permutation(100)
+
     # Get the training points x,y
     model.x = model.data_idn['X'].astype(dtype=config.real(np))
-    model.y = model.data_idn['Y'].astype(dtype=config.real(np))
+    model.y = model.data_idn['Y'].astype(dtype=config.real(np))[::2, :]
     
+    print('model.x.shape', model.x.shape)
+    print('model.y.shape', model.y.shape)
+
     # Get the spatial dimension
     model.dimension = model.x.shape[1]
     
@@ -55,8 +62,11 @@ def load_data(model, example_path, example_name):
     model.weights_y = np.reshape(get_weights(quadrature_rule, model.y), (-1,1,1))
     
      # Get the training data u and f
-    model.u = model.data_idn['U'].astype(dtype=config.real(np))
-    model.f = model.data_idn['F'].astype(dtype=config.real(np))
+    model.u = model.data_idn['U'].astype(dtype=config.real(np))[:, shuffle_idx[:N_train]]
+    model.f = model.data_idn['F'].astype(dtype=config.real(np))[::2, shuffle_idx[:N_train]]
+
+    print('model.u.shape', model.u.shape)
+    print('model.f.shape', model.f.shape)
     
     # Reshape the training data to 3 dimensions
     if len(model.u.shape) == 2:

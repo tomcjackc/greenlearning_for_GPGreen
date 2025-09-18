@@ -34,7 +34,7 @@ class Model:
     
     """
     
-    def __init__(self, G_network, U_hom_network):
+    def __init__(self, G_network, U_hom_network, adam_steps=10**3, lbfgs_steps=5*10**4):
         """Initialize the model."""
         
         # Paths to save the results
@@ -43,8 +43,8 @@ class Model:
         self.path_training = "training"
         
         # Number of epochs for Adam and L-BFGS optimizers
-        self.epochs_adam = 10**3
-        self.epochs_lbgs = 5*10**4
+        self.epochs_adam = adam_steps
+        self.epochs_lbgs = lbfgs_steps
         
         # Number of input and output data
         self.n_input = len(G_network[0])
@@ -90,11 +90,11 @@ class Model:
                                            'ftol': 1e-20,
                                            'gtol': 1.0*np.finfo(float).eps})
         
-    def train(self, example_path, example_name):
+    def train(self, example_path, example_name, N_train, N_test, noise_ratio, resample):
         """Train the Green's function and homogeneous solution networks."""
         
         # Choose the data set and load it
-        load_data(self, example_path, example_name)
+        load_data(self, example_path, example_name, N_train, N_test, noise_ratio, resample)
         
         # Initialize the variables
         init = tf.global_variables_initializer()
