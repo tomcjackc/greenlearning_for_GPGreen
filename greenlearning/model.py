@@ -49,6 +49,9 @@ class Model:
         # Number of input and output data
         self.n_input = len(G_network[0])
         self.n_output = len(G_network)
+
+        print('self.n_input', self.n_input)
+        print('self.n_output', self.n_output)
         
         # Check the networks shape
         if self.n_output != len(U_hom_network):

@@ -4,8 +4,6 @@ import scipy.io
 from . import config
 from ..quadrature_weights import get_weights
 
-np.random.seed(42)
-
 def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, resample):
     """Load the training dataset."""
     
@@ -60,9 +58,14 @@ def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, r
     
     model.weights_x = get_weights(quadrature_rule, model.x)
     model.weights_y = np.reshape(get_weights(quadrature_rule, model.y), (-1,1,1))
+
+    # Load evaluation points and testing set
+    model.U_hom = np.zeros_like(model.data_idn['U_hom'].astype(dtype=config.real(np)))
+    if len(model.U_hom.shape) == 1:
+        model.U_hom = np.reshape(model.U_hom, model.U_hom.shape + (1,))
     
      # Get the training data u and f
-    model.u = model.data_idn['U'].astype(dtype=config.real(np))[:, shuffle_idx[:N_train]]
+    model.u = model.data_idn['U'].astype(dtype=config.real(np))[:, shuffle_idx[:N_train]] - model.data_idn['U_hom']
     model.f = model.data_idn['F'].astype(dtype=config.real(np))[::2, shuffle_idx[:N_train]]
 
     print('model.u.shape', model.u.shape)
@@ -81,13 +84,8 @@ def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, r
     if G_shape != expected_shape:
         raise ValueError("Shape of G: (%d,%d) and training data: (%d,%d) don't match." % (G_shape[0],G_shape[1],expected_shape[0],expected_shape[1]))
     
-    # Load evaluation points and testing set
-    model.U_hom = model.data_idn['U_hom'].astype(dtype=config.real(np))
-    if len(model.U_hom.shape) == 1:
-        model.U_hom = np.reshape(model.U_hom, model.U_hom.shape + (1,))
-    
-    model.x_G = model.data_idn['XG'].astype(dtype=config.real(np))
-    model.y_G = model.data_idn['YG'].astype(dtype=config.real(np))
+    model.x_G = model.data_idn['XG'].astype(dtype=config.real(np))[::10, :]
+    model.y_G = model.data_idn['YG'].astype(dtype=config.real(np))[::10, :]
     
     try:
         model.ExactGreen = model.data_idn['ExactGreen'][0]

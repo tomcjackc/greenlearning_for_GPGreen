@@ -29,6 +29,7 @@ def save_results(model, Green_slice=1):
             # Evaluate the Green's function
             G_pred_identifier = model.sess.run(model.G_network[i][j].evaluate(input_data))
             G_pred = G_pred_identifier.reshape(shape_Green)
+            print('G_pred shape', G_pred.shape)
     
             # Save Green's function into a csv file
             if model.dimension == 1:
