@@ -34,7 +34,7 @@ class Model:
     
     """
     
-    def __init__(self, G_network, U_hom_network, adam_steps=10**3, lbfgs_steps=5*10**4):
+    def __init__(self, G_network, U_hom_network, adam_steps=10**3, lbfgs_steps=5*10**4, N_train=100, noise_ratio=0.0, resample=1, repeat=0):
         """Initialize the model."""
         
         # Paths to save the results
@@ -50,8 +50,11 @@ class Model:
         self.n_input = len(G_network[0])
         self.n_output = len(G_network)
 
-        print('self.n_input', self.n_input)
-        print('self.n_output', self.n_output)
+        # Data parameters
+        self.N_train = N_train
+        self.noise_ratio = noise_ratio
+        self.resample = resample
+        self.repeat = repeat
         
         # Check the networks shape
         if self.n_output != len(U_hom_network):
@@ -93,17 +96,17 @@ class Model:
                                            'ftol': 1e-20,
                                            'gtol': 1.0*np.finfo(float).eps})
         
-    def train(self, example_path, example_name, N_train, N_test, noise_ratio, resample):
+    def train(self, example_path, example_name):
         """Train the Green's function and homogeneous solution networks."""
         
         # Choose the data set and load it
-        load_data(self, example_path, example_name, N_train, N_test, noise_ratio, resample)
+        load_data(self, example_path, example_name)
         
         # Initialize the variables
         init = tf.global_variables_initializer()
         self.sess.run(init)
         
-        # Create the feed dictionnary        
+        # Create the feed dictionnary
         tf_dict = self.idn_loss.feed_dict(self.x, self.y, self.f, self.u, self.weights_x, self.weights_y)
         
         # Run Adam's optimizer

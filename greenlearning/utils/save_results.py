@@ -33,9 +33,9 @@ def save_results(model, Green_slice=1):
     
             # Save Green's function into a csv file
             if model.dimension == 1:
-                np.savetxt('%s/Green_%s_%s_%d.csv' % (model.path_csv, model.example_name, model.activation_name, k), G_pred, fmt='%.4e', delimiter=',')
+                np.savetxt('%s/Green_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
             else:
-                np.savetxt('%s/Green_%s_%s_%d-%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice), G_pred, fmt='%.4e', delimiter=',')
+                np.savetxt('%s/Green_%s_%s_%d-%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
                 
             k = k+1
         

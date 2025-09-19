@@ -3,8 +3,9 @@ import numpy as np
 import scipy.io
 from . import config
 from ..quadrature_weights import get_weights
+import matplotlib.pyplot as plt
 
-def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, resample):
+def load_data(model, example_path, example_name):
     """Load the training dataset."""
     
     # Example name
@@ -36,14 +37,11 @@ def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, r
     # Load the dataset
     model.data_idn = scipy.io.loadmat(example_path+"%s.mat" % model.example_name)
     
-    shuffle_idx = np.random.permutation(100)
+    shuffle_idx = np.random.permutation(80) # only ever use the first 80 points for training
 
     # Get the training points x,y
-    model.x = model.data_idn['X'].astype(dtype=config.real(np))
-    model.y = model.data_idn['Y'].astype(dtype=config.real(np))[::2, :]
-    
-    print('model.x.shape', model.x.shape)
-    print('model.y.shape', model.y.shape)
+    model.x = model.data_idn['X'].astype(dtype=config.real(np))[::model.resample, :]
+    model.y = model.data_idn['Y'].astype(dtype=config.real(np))[::2 * model.resample, :]
 
     # Get the spatial dimension
     model.dimension = model.x.shape[1]
@@ -65,12 +63,22 @@ def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, r
         model.U_hom = np.reshape(model.U_hom, model.U_hom.shape + (1,))
     
      # Get the training data u and f
-    model.u = model.data_idn['U'].astype(dtype=config.real(np))[:, shuffle_idx[:N_train]] - model.data_idn['U_hom']
-    model.f = model.data_idn['F'].astype(dtype=config.real(np))[::2, shuffle_idx[:N_train]]
+    model.u = model.data_idn['U'].astype(dtype=config.real(np))[::model.resample, shuffle_idx[:model.N_train]] - model.data_idn['U_hom']
+    model.f = model.data_idn['F'].astype(dtype=config.real(np))[::2 * model.resample, shuffle_idx[:model.N_train]]
 
-    print('model.u.shape', model.u.shape)
-    print('model.f.shape', model.f.shape)
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+    axs[0].plot(model.x, model.f)
+    axs[0].set_title('f (source term)')
+    axs[1].plot(model.x, model.u)
+    axs[1].set_title('u (response)')
+    plt.show()
+    plt.close()
     
+    # add noise to the response u
+    mean_abs_u = np.mean(np.abs(model.u))
+    noise = model.noise_ratio * mean_abs_u * np.random.randn(*model.u.shape)
+    model.u = model.u + noise
+
     # Reshape the training data to 3 dimensions
     if len(model.u.shape) == 2:
         model.u = np.reshape(model.u, model.u.shape+(1,))
@@ -84,8 +92,11 @@ def load_data(model, example_path, example_name, N_train, N_test, noise_ratio, r
     if G_shape != expected_shape:
         raise ValueError("Shape of G: (%d,%d) and training data: (%d,%d) don't match." % (G_shape[0],G_shape[1],expected_shape[0],expected_shape[1]))
     
-    model.x_G = model.data_idn['XG'].astype(dtype=config.real(np))[::10, :]
-    model.y_G = model.data_idn['YG'].astype(dtype=config.real(np))[::10, :]
+    # model.x_G = model.data_idn['XG'].astype(dtype=config.real(np))[::10, :]
+    # model.y_G = model.data_idn['YG'].astype(dtype=config.real(np))[::10, :]
+
+    model.x_G = model.x
+    model.y_G = model.y
     
     try:
         model.ExactGreen = model.data_idn['ExactGreen'][0]
