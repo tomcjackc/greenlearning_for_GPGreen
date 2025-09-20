@@ -66,13 +66,13 @@ def load_data(model, example_path, example_name):
     model.u = model.data_idn['U'].astype(dtype=config.real(np))[::model.resample, shuffle_idx[:model.N_train]] - model.data_idn['U_hom']
     model.f = model.data_idn['F'].astype(dtype=config.real(np))[::2 * model.resample, shuffle_idx[:model.N_train]]
 
-    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
-    axs[0].plot(model.x, model.f)
-    axs[0].set_title('f (source term)')
-    axs[1].plot(model.x, model.u)
-    axs[1].set_title('u (response)')
-    plt.show()
-    plt.close()
+    # fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+    # axs[0].plot(model.x, model.f)
+    # axs[0].set_title('f (source term)')
+    # axs[1].plot(model.x, model.u)
+    # axs[1].set_title('u (response)')
+    # plt.show()
+    # plt.close()
     
     # add noise to the response u
     mean_abs_u = np.mean(np.abs(model.u))
