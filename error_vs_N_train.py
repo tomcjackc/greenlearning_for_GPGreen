@@ -19,7 +19,7 @@ for i in repeats:
     U_hom_network = gl.matrix_networks([1] + [50] * 4 + [1], "rational", (1,))
 
     # Define the model
-    model = gl.Model(G_network, U_hom_network, N_train=N_train, noise_ratio=noise_ratio, resample=resample, repeat=i, adam_steps=10, lbfgs_steps=10)
+    model = gl.Model(G_network, U_hom_network, N_train=N_train, noise_ratio=noise_ratio, resample=resample, repeat=i)
     model.path_csv = "results_csv"
 
     # Train the model on the dataset "helmholtz" in the path "examples/datasets/"

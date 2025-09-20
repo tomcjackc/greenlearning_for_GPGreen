@@ -1,8 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name="My test job"
-#SBATCH --time=01:00:00
-#SBATCH --mem=1M
+#SBATCH --job-name="error_vs_N_train"
+#SBATCH --time=04:00:00
+#SBATCH --mem=8G
+#SBATCH --account=ai4er
+#SBATCH --partition=standard
+#SBATCH --qos=short
 #SBATCH -o %j.out
 #SBATCH -e %j.err
+
+source /home/users/tc656/.bashrc
+
+eval "$(conda shell.bash hook)"
+
+conda activate greenlearning
 
 python error_vs_N_train.py
