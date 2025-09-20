@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="greenlearning error"
+#SBATCH --job-name="greenlearning error vs noise ratio"
 #SBATCH --time=04:00:00
 #SBATCH --mem=8G
 #SBATCH --account=ai4er
