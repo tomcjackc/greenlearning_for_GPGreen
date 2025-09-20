@@ -43,4 +43,4 @@ def save_results(model, Green_slice=1):
         N_pred = model.sess.run(model.idn_N_pred[i].evaluate(input_hom))
         
         # Save homogeneous solution
-        np.savetxt('%s/Hom_%s_%s_%d.csv' % (model.path_csv, model.example_name, model.activation_name, i), N_pred, fmt='%.4e', delimiter=',')
+        np.savetxt('%s/Hom_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), N_pred, fmt='%.4e', delimiter=',')

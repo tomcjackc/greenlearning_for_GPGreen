@@ -14,4 +14,4 @@ eval "$(conda shell.bash hook)"
 
 conda activate greenlearning
 
-python error_vs_N_train.py
+python error_vs_noise_ratio.py
