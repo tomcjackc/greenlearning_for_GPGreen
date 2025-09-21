@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+np.random.seed(42)
+
 # Parameters to be varied
 N_train = 75
 noise_ratio = float(os.getenv('NOISE_RATIO'))

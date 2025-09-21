@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+np.random.seed(42)
+
 # Parameters to be varied
 N_train = int(os.getenv('N_TRAIN'))
 print('N_train = ', N_train)
