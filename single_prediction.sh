@@ -8,7 +8,7 @@
 #SBATCH -o alleq_error_vs_N_train_logs/%j.out
 #SBATCH -e alleq_error_vs_N_train_logs/%j.err
 
-for E in "boundary_layer";
+for E in "viscous_shock";
 do
     export EQUATION=$E
 

@@ -63,6 +63,9 @@ for i in repeats:
     u = raw_data['F'][::2 * resample, -N_test:] # (100, N_test)
     v = raw_data['U'][::resample, -N_test:] # (100, N_test)
 
+    v_hom = raw_data['U_hom'][::resample, :] # (100, N_test)
+    v = v - v_hom  # subtract homogeneous solution
+
     domain_u = raw_data['X'][::resample, 0] # (100,)
 
     time_3 = time.time()
