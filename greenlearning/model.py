@@ -144,7 +144,7 @@ class Model:
         """Save the Green's function evaluated at a grid in a csv file."""
         
         if self.dimension == 1:
-            save_results(self)
+            return save_results(self, to_file=to_file)
             
         elif self.dimension == 2:
             for i in range(1,5):
