@@ -140,7 +140,7 @@ class Model:
         """Print all the trainable weights."""
         print_weights(self)
             
-    def save_results(self):
+    def save_results(self, to_file=True):
         """Save the Green's function evaluated at a grid in a csv file."""
         
         if self.dimension == 1:
@@ -148,7 +148,7 @@ class Model:
             
         elif self.dimension == 2:
             for i in range(1,5):
-                save_results(self, Green_slice=i)
+                save_results(self, Green_slice=i, to_file=to_file)
         
         else:
             raise ValueError("Function not implemented for dimension greater than 2.")

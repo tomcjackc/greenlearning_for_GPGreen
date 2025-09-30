@@ -16,7 +16,7 @@ noise_ratio = 0e-2
 resample = 1
 repeats = range(5)
 
-filename = 'results_csv_wall_time/train_wall_time_vs_N_train.csv'
+filename = 'results/train_wall_time_vs_N_train.csv'
 
 for i in repeats:
     # Construct neural networks for G and homogeneous solution

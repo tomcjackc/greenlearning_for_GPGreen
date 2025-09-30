@@ -11,9 +11,11 @@ np.random.seed(42)
 # Parameters to be varied
 N_train = int(os.getenv('N_TRAIN'))
 print('N_train = ', N_train)
-noise_ratio = 0e-2
+noise_ratio = 1e-2
 resample = 1
 repeats = range(5)
+
+
 
 for i in repeats:
     # Construct neural networks for G and homogeneous solution
@@ -28,7 +30,7 @@ for i in repeats:
     model.train("examples/datasets/","helmholtz")
 
     # Save the NNs evaluated at a grid in a csv file
-    model.save_results()
+    G_pred = model.save_results(to_file=False)
 
     # Close the TensorFlow session
     model.sess.close()

@@ -37,7 +37,7 @@ def load_data(model, example_path, example_name):
     # Load the dataset
     model.data_idn = scipy.io.loadmat(example_path+"%s.mat" % model.example_name)
     
-    shuffle_idx = np.random.permutation(80) # only ever use the first 80 points for training
+    shuffle_idx = np.random.permutation(75) # only ever use the first 75 points for training
 
     # Get the training points x,y
     model.x = model.data_idn['X'].astype(dtype=config.real(np))[::model.resample, :]

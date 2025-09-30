@@ -2,7 +2,7 @@ import numpy as np
 from .visualization import input_data_slice
 from . import config
 
-def save_results(model, Green_slice=1):
+def save_results(model, Green_slice=1, to_file=True):
     """Save the Green's function evaluated at a grid in a csv file.
     If the spatial dimension is equal to 2, Green_slice indicates the slice to save the Green's function'
     """
@@ -31,16 +31,21 @@ def save_results(model, Green_slice=1):
             G_pred = G_pred_identifier.reshape(shape_Green)
             print('G_pred shape', G_pred.shape)
     
-            # Save Green's function into a csv file
-            if model.dimension == 1:
-                np.savetxt('%s/Green_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
-            else:
-                np.savetxt('%s/Green_%s_%s_%d-%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
+            if to_file:
+                # Save Green's function into a csv file
+                if model.dimension == 1:
+                    np.savetxt('%s/Green_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
+
+                else:
+                    np.savetxt('%s/Green_%s_%s_%d-%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
                 
             k = k+1
         
         # Evaluate the homogeneous solution
         N_pred = model.sess.run(model.idn_N_pred[i].evaluate(input_hom))
         
-        # Save homogeneous solution
-        np.savetxt('%s/Hom_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), N_pred, fmt='%.4e', delimiter=',')
+        if to_file:
+            # Save homogeneous solution
+            np.savetxt('%s/Hom_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), N_pred, fmt='%.4e', delimiter=',')
+
+    return G_pred
