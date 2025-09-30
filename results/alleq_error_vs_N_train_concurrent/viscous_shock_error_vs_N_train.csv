@@ -1,0 +1,3 @@
+eq,N_train,noise_ratio,resample,repeat,train_wall_time,pred_wall_time,rel_L2_error
+viscous_shock,4,0.01,1,0,89.139089345932,0.017391443252563477,22.930523933817746
+viscous_shock,60,0.01,1,0,87.7248957157135,0.02066206932067871,0.6574474502360738

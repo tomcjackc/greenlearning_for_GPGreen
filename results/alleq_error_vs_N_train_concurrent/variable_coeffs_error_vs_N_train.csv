@@ -1,0 +1,2 @@
+eq,N_train,noise_ratio,resample,repeat,train_wall_time,pred_wall_time,rel_L2_error
+variable_coeffs,2,0.01,1,0,61.65951681137085,0.008129358291625977,188.4578713041255
