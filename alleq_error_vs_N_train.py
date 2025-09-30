@@ -66,8 +66,8 @@ for i in repeats:
     domain_u = raw_data['X'][::resample, 0] # (100,)
 
     time_3 = time.time()
-    integrand = G_pred[:, :, None] * u[None, :, :]  # (100, 100, N_test)  # broadcast u over columns (y-axis)
-    v_est = np.trapz(integrand, x=domain_u, axis=1) # (100, N_test)  # integrate over y (axis=1)
+    integrand = G_pred[:, :, None] * u[:, None, :]  # (100, 100, N_test)  # broadcast u over columns (y-axis)
+    v_est = np.trapz(integrand, x=domain_u, axis=0) # (100, N_test)  # integrate over y (axis=1)
     time_4 = time.time()
 
     pred_wall_time = time_4 - time_3

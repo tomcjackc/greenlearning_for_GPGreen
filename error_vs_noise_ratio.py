@@ -28,7 +28,7 @@ for i in repeats:
     model.train("examples/datasets/","helmholtz")
 
     # Save the NNs evaluated at a grid in a csv file
-    model.save_results()
+    model.save_results(to_file=False)
 
     # Close the TensorFlow session
     model.sess.close()
