@@ -34,7 +34,7 @@ class Model:
     
     """
     
-    def __init__(self, G_network, U_hom_network, adam_steps=10**3, lbfgs_steps=5*10**4, N_train=100, noise_ratio=0.0, resample=1, repeat=0):
+    def __init__(self, G_network, U_hom_network, adam_steps=10**3, lbfgs_steps=5*10**4, N_train=100, noise_ratio=0.0, resample=1, repeat=0, dropout_rate=0.0, mc_samples=50):
         """Initialize the model."""
         
         # Paths to save the results
@@ -55,6 +55,8 @@ class Model:
         self.noise_ratio = noise_ratio
         self.resample = resample
         self.repeat = repeat
+        self.dropout_rate = dropout_rate
+        self.mc_samples = mc_samples
         
         # Check the networks shape
         if self.n_output != len(U_hom_network):
@@ -77,7 +79,8 @@ class Model:
         """Initialize the variables and optimizers."""
                 
         # Define loss function        
-        self.idn_loss = loss_function(self.G_network, self.idn_N_pred)
+        self.keep_prob = tf.placeholder_with_default(1.0, shape=(), name="keep_prob")
+        self.idn_loss = loss_function(self.G_network, self.idn_N_pred, self.keep_prob)
         
         # Define Adam optimizaer
         self.optimizer_Adam = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
@@ -108,6 +111,7 @@ class Model:
         
         # Create the feed dictionnary
         tf_dict = self.idn_loss.feed_dict(self.x, self.y, self.f, self.u, self.weights_x, self.weights_y)
+        tf_dict[self.keep_prob] = 1.0 - self.dropout_rate
         
         # Run Adam's optimizer
         self.LossArray = []
@@ -119,14 +123,25 @@ class Model:
                 print("It: %d, Loss = %.3e" %(it, loss_value))
         
         # Run L-BFGS optimizer
+        lbfgs_dict = dict(tf_dict)
+        lbfgs_dict[self.keep_prob] = 1.0
         self.idn_u_optimizer.minimize(self.sess,
-                                      feed_dict = tf_dict,
+                                      feed_dict = lbfgs_dict,
                                       fetches = [self.idn_loss.outputs],
                                       loss_callback = self.callback)
         
     def callback(self, loss):
         """"Callback for optimizers: save the current value of the loss function."""
         self.LossArray = self.LossArray + [loss]
+
+    def mc_predict(self, tensor, mc_samples=None):
+        """Evaluate a tensor repeatedly with dropout active to estimate uncertainty."""
+        mc_samples = self.mc_samples if mc_samples is None else mc_samples
+        samples = []
+        for _ in range(mc_samples):
+            samples.append(self.sess.run(tensor, {self.keep_prob: 1.0 - self.dropout_rate}))
+        samples = np.array(samples)
+        return np.mean(samples, axis=0), np.std(samples, axis=0), samples
     
     def save_loss(self):
         """Save the loss function in a file after training."""

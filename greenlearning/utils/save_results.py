@@ -27,25 +27,31 @@ def save_results(model, Green_slice=1, to_file=True):
     for i in range(model.n_output):
         for j in range(model.n_input):
             # Evaluate the Green's function
-            G_pred_identifier = model.sess.run(model.G_network[i][j].evaluate(input_data))
+            G_tensor = model.G_network[i][j].evaluate(input_data, keep_prob=model.keep_prob)
+            G_pred_identifier, G_std_identifier, _ = model.mc_predict(G_tensor)
             G_pred = G_pred_identifier.reshape(shape_Green)
+            G_std = G_std_identifier.reshape(shape_Green)
             print('G_pred shape', G_pred.shape)
     
             if to_file:
                 # Save Green's function into a csv file
                 if model.dimension == 1:
                     np.savetxt('%s/Green_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
+                    np.savetxt('%s/GreenStd_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), G_std, fmt='%.4e', delimiter=',')
 
                 else:
                     np.savetxt('%s/Green_%s_%s_%d-%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice, model.N_train, model.noise_ratio, model.resample, model.repeat), G_pred, fmt='%.4e', delimiter=',')
+                    np.savetxt('%s/GreenStd_%s_%s_%d-%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, Green_slice, model.N_train, model.noise_ratio, model.resample, model.repeat), G_std, fmt='%.4e', delimiter=',')
                 
             k = k+1
         
         # Evaluate the homogeneous solution
-        N_pred = model.sess.run(model.idn_N_pred[i].evaluate(input_hom))
+        N_tensor = model.idn_N_pred[i].evaluate(input_hom, keep_prob=model.keep_prob)
+        N_pred, N_std, _ = model.mc_predict(N_tensor)
         
         if to_file:
             # Save homogeneous solution
             np.savetxt('%s/Hom_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), N_pred, fmt='%.4e', delimiter=',')
+            np.savetxt('%s/HomStd_%s_%s_%d_Ntrain%d_noiseratio%f_resample%d_repeat%d.csv' % (model.path_csv, model.example_name, model.activation_name, k, model.N_train, model.noise_ratio, model.resample, model.repeat), N_std, fmt='%.4e', delimiter=',')
 
     return G_pred

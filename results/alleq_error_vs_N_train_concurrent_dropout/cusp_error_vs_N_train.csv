@@ -1,0 +1,2 @@
+dataset,N_train,noise_ratio,resample,repeat,dropout_rate,mc_samples,predictive_mean_relative_L2_error,empirical_joint_log_likelihood,mean_log_likelihood_per_entry
+cusp,75,0.0,1,0,0.02,50,93.44397434594129,-17549956.02245547,-8774.978011227735

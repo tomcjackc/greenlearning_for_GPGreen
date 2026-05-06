@@ -16,9 +16,10 @@ class NeuralNetwork:
     creates a rational neural network with 4 hidden layers of 50 neurons.
     """
     
-    def __init__(self, layers, activation_name):
+    def __init__(self, layers, activation_name, dropout_rate=0.0):
         self.layers = layers
         self.activation_name = activation_name
+        self.dropout_rate = dropout_rate
         
         # Initialize weights of the neural network
         self.initialize_NN()
@@ -55,7 +56,7 @@ class NeuralNetwork:
         xavier_stddev = np.sqrt(2/(in_dim + out_dim))
         return tf.Variable(tf.random.truncated_normal([in_dim, out_dim], stddev=xavier_stddev), dtype=config.real(tf))    
     
-    def evaluate(self, X):
+    def evaluate(self, X, keep_prob=1.0):
         """Evaluate the neural network at the array X."""
         
         # Loop over the number of layers
@@ -66,6 +67,8 @@ class NeuralNetwork:
             
             # Add the activation function with corresponding weights
             X = activations.get(self.activation_name, self.activation_weights[l])(X)
+            if self.dropout_rate > 0.0:
+                X = tf.nn.dropout(X, keep_prob=keep_prob)
             
         # Add the final layer
         W = self.weights[-1]

@@ -1,6 +1,6 @@
 from .neural_network import NeuralNetwork
 
-def matrix_networks(layers, activation, shape):
+def matrix_networks(layers, activation, shape, dropout_rate=0.0):
     """Create a matrix of neural networks with the given parameters.
     
     Example: 
@@ -20,11 +20,11 @@ def matrix_networks(layers, activation, shape):
         for i in range(shape[0]):
             Row = []
             for j in range(shape[1]):
-                Row.append(NeuralNetwork(layers, activation))
+                Row.append(NeuralNetwork(layers, activation, dropout_rate=dropout_rate))
             M.append(Row)
     # Create a vector
     else:
         for i in range(shape[0]):
-            M.append(NeuralNetwork(layers, activation))
+            M.append(NeuralNetwork(layers, activation, dropout_rate=dropout_rate))
     
     return M

@@ -6,9 +6,10 @@ class loss_function:
     
     Inputs: matrices of neural networks G and N.
     """
-    def __init__(self, G, N):
+    def __init__(self, G, N, keep_prob):
         self.G = G
         self.N = N
+        self.keep_prob = keep_prob
         self.build()
 
     @property
@@ -63,7 +64,7 @@ class loss_function:
             self.loss_i = 0
             for j in range(n_input):
                 # Evaluate Gij at all spatial points
-                self.G_output = self.G[i][j].evaluate(training_G)
+                self.G_output = self.G[i][j].evaluate(training_G, keep_prob=self.keep_prob)
             
                 # Compute integral of Gij*fj over y
                 lossij = tf.reshape(self.G_output, (Nf, -1))
@@ -72,7 +73,7 @@ class loss_function:
                 self.loss_i = self.loss_i + tf.matmul(lossij, f_weights[:,:,j], transpose_a=True)
         
             # Get output of homogeneous solution
-            self.N_output = self.N[i].evaluate(self.xU)
+            self.N_output = self.N[i].evaluate(self.xU, keep_prob=self.keep_prob)
             
             # Difference with u
             loss_N = tf.repeat(self.N_output, tf.shape(self.u)[1], 1)
